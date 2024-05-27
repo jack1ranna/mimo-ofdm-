@@ -1,0 +1,237 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>st_decoding</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-05-10"><meta name="DC.source" content="st_decoding.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span>   st_decoded = st_decoding( Recv,channel_est,N_Tx_ant, N_Rx_ant ,ST_Code, Idx_data)
+
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% &#31354;&#26102;&#35299;&#30721;&#21644;&#20998;&#38598;&#22788;&#29702;</span>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+
+N_subc = size(Recv,1);<span class="comment">%&#23376;&#36733;&#27874;&#25968;</span>
+N_sym = size(Recv,2);<span class="comment">%&#31526;&#21495;&#25968;</span>
+st_decoded = zeros(N_subc, N_sym);
+<span class="comment">% &#25226;H_freq&#36716;&#21270;&#20026;&#31354;&#26102;&#35793;&#30721;&#22120;&#30340;&#36755;&#20837;&#26684;&#24335;,&#20026;&#19968;&#20010;N_subc*N_ant_pair&#30340;&#30697;&#38453;,&#27599;&#21015;&#34920;&#31034;:</span>
+<span class="comment">% 1--&gt;1 ,1--&gt;2,...,1--&gt;N_Rx_ant, ... ,N_Tx_ant--&gt;1, N_Tx_ant--&gt;2,..., N_Tx_ant--&gt;N_Rx_ant</span>
+
+H = squeeze(channel_est(:,1,:));
+<span class="comment">%H=ones(N_subc,N_ant_pair );%&#20551;&#35774;&#20026;&#29702;&#24819;&#20449;&#36947;&#65292;&#20840;1&#30697;&#38453;</span>
+
+<span class="comment">% &#22914;&#26524;&#27809;&#26377;&#21457;&#36865;&#20998;&#38598;,&#31354;&#26102;&#32534;&#30721;</span>
+<span class="keyword">if</span> N_Tx_ant == 1
+    <span class="keyword">if</span> N_Rx_ant ~= 1
+
+        <span class="comment">% &#26368;&#22823;&#27604;&#21512;&#24182;, &#27599;&#26465;&#22825;&#32447;&#25968;&#25454;&#30340;&#21152;&#26435;&#20026;&#35813;&#22825;&#32447;&#30340;&#20449;&#36947;&#21709;&#24212;</span>
+        numerator = zeros(length(Idx_data),N_sym);
+        denominator = zeros(length(Idx_data),N_sym);
+        <span class="keyword">for</span> n_r = 1:N_Rx_ant
+             numerator = numerator + Recv(Idx_data,:,n_r).*conj(repmat(channel_est(Idx_data,1,n_r),1,N_sym));
+             denominator = denominator + abs(repmat(channel_est(Idx_data,1,n_r),1,N_sym)).^2;
+        <span class="keyword">end</span>
+        st_decoded(Idx_data,:) = numerator./denominator;
+
+
+    <span class="keyword">else</span>
+        <span class="comment">%st_decoded(Idx_data,:) = Recv(Idx_data,:)./repmat(channel_est(Idx_data),1,N_sym);</span>
+        st_decoded(Idx_data,:) = Recv(Idx_data,:).*conj(repmat(channel_est(Idx_data),1,N_sym))<span class="keyword">...</span>
+                                    ./abs(repmat(channel_est(Idx_data),1,N_sym)).^2;
+        <span class="comment">% st_decoded = Recv; % &#27979;&#35797;</span>
+    <span class="keyword">end</span>
+
+<span class="comment">% &#22914;&#26524;&#26377;&#21457;&#36865;&#20998;&#38598;</span>
+<span class="keyword">else</span>
+<span class="comment">% &#22914;&#26524;&#20351;&#29992;&#31354;&#26102;&#20998;&#32452;&#30721;</span>
+    <span class="keyword">if</span> ST_Code == 1
+
+        <span class="keyword">if</span> (N_Tx_ant == 2)&amp;(N_Rx_ant == 1)
+            <span class="comment">% &#31616;&#21333;2&#21457;1&#25910;STBC&#35299;&#30721;</span>
+
+        <span class="keyword">elseif</span> (N_Tx_ant == 2)&amp;(N_Rx_ant == 2)
+            <span class="comment">% 2&#21457;2&#25910;STBC&#35299;&#30721;</span>
+
+            <span class="comment">% &#25509;&#25910;&#31526;&#21495;&#25353;&#29031;N_sym/N_Tx_ant &#32452;&#26469;&#22788;&#29702;</span>
+            <span class="keyword">for</span> n = 1:N_sym/N_Tx_ant <span class="comment">% 1&#65306;10/2=1:5</span>
+                <span class="comment">% &#26500;&#36896;&#36755;&#20837;&#36827;&#31354;&#26102;&#35793;&#30721;&#22120;&#30340;&#31526;&#21495;,&#29992;t&#34920;&#31034;&#26102;&#38388;&#21495;,a&#34920;&#31034;&#22825;&#32447;&#21495;,&#20854;&#26684;&#24335;&#20026;:</span>
+                <span class="comment">% [Recv(t1,a1) Recv(t2,a1) Recv(t1,a2) Recv(t2,a2)].</span>
+                R = [];
+                <span class="keyword">for</span> ant = 1:N_Rx_ant
+                    R = [R  Recv(:,(n-1)*N_Tx_ant+1:n*N_Tx_ant,ant) ];<span class="comment">%&#23545;&#20110;2X2MIMO&#26469;&#35828;&#65292;R&#30697;&#38453;&#21363;&#20026;[Xe  -conj(Xo)  Xo  conj(Xe)]</span>
+                <span class="keyword">end</span>
+                output = stbc_decode_TX2RX2(H,R);
+                st_decoded(:,(n-1)*N_Tx_ant+1:n*N_Tx_ant) = output;
+            <span class="keyword">end</span>
+
+
+        <span class="keyword">elseif</span> (N_Tx_ant == 2)&amp;(N_Rx_ant == 4)
+            <span class="comment">% 2&#21457;4&#25910;STBC&#35299;&#30721;</span>
+            output=stbc_decode_TX2RX4(H,R)
+
+        <span class="keyword">elseif</span> (N_Tx_ant == 4)&amp;(N_Rx_ant == 4)
+            <span class="comment">% 2&#21457;4&#25910;STBC&#35299;&#30721;</span>
+            output=stbc_decode_TX4RX4(H,R)
+
+        <span class="keyword">else</span>
+            st_decoded = input;
+        <span class="keyword">end</span>
+
+
+<span class="comment">% &#20351;&#29992;&#31354;&#26102;&#26684;&#30721;</span>
+    <span class="keyword">elseif</span> ST_Code == 2
+
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">&#36755;&#20837;&#21442;&#25968;&#30340;&#25968;&#30446;&#19981;&#36275;&#12290;
+
+&#20986;&#38169; st_decoding (line 8)
+N_subc = size(Recv,1);%&#23376;&#36733;&#27874;&#25968;
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function   st_decoded = st_decoding( Recv,channel_est,N_Tx_ant, N_Rx_ant ,ST_Code, Idx_data)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 空时解码和分集处理
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+N_subc = size(Recv,1);%子载波数
+N_sym = size(Recv,2);%符号数
+st_decoded = zeros(N_subc, N_sym);
+% 把H_freq转化为空时译码器的输入格式,为一个N_subc*N_ant_pair的矩阵,每列表示:
+% 1REPLACE_WITH_DASH_DASH>1 ,1REPLACE_WITH_DASH_DASH>2,...,1REPLACE_WITH_DASH_DASH>N_Rx_ant, ... ,N_Tx_antREPLACE_WITH_DASH_DASH>1, N_Tx_antREPLACE_WITH_DASH_DASH>2,..., N_Tx_antREPLACE_WITH_DASH_DASH>N_Rx_ant
+
+H = squeeze(channel_est(:,1,:));
+%H=ones(N_subc,N_ant_pair );%假设为理想信道，全1矩阵
+
+% 如果没有发送分集,空时编码
+if N_Tx_ant == 1
+    if N_Rx_ant ~= 1
+        
+        % 最大比合并, 每条天线数据的加权为该天线的信道响应
+        numerator = zeros(length(Idx_data),N_sym);
+        denominator = zeros(length(Idx_data),N_sym);
+        for n_r = 1:N_Rx_ant
+             numerator = numerator + Recv(Idx_data,:,n_r).*conj(repmat(channel_est(Idx_data,1,n_r),1,N_sym));
+             denominator = denominator + abs(repmat(channel_est(Idx_data,1,n_r),1,N_sym)).^2;
+        end
+        st_decoded(Idx_data,:) = numerator./denominator;
+        
+        
+    else
+        %st_decoded(Idx_data,:) = Recv(Idx_data,:)./repmat(channel_est(Idx_data),1,N_sym);
+        st_decoded(Idx_data,:) = Recv(Idx_data,:).*conj(repmat(channel_est(Idx_data),1,N_sym))...
+                                    ./abs(repmat(channel_est(Idx_data),1,N_sym)).^2;
+        % st_decoded = Recv; % 测试
+    end
+
+% 如果有发送分集
+else
+% 如果使用空时分组码
+    if ST_Code == 1
+    
+        if (N_Tx_ant == 2)&(N_Rx_ant == 1)
+            % 简单2发1收STBC解码
+        
+        elseif (N_Tx_ant == 2)&(N_Rx_ant == 2)
+            % 2发2收STBC解码
+
+            % 接收符号按照N_sym/N_Tx_ant 组来处理
+            for n = 1:N_sym/N_Tx_ant % 1：10/2=1:5
+                % 构造输入进空时译码器的符号,用t表示时间号,a表示天线号,其格式为:
+                % [Recv(t1,a1) Recv(t2,a1) Recv(t1,a2) Recv(t2,a2)].
+                R = [];
+                for ant = 1:N_Rx_ant
+                    R = [R  Recv(:,(n-1)*N_Tx_ant+1:n*N_Tx_ant,ant) ];%对于2X2MIMO来说，R矩阵即为[Xe  -conj(Xo)  Xo  conj(Xe)]
+                end
+                output = stbc_decode_TX2RX2(H,R);
+                st_decoded(:,(n-1)*N_Tx_ant+1:n*N_Tx_ant) = output;
+            end
+
+
+        elseif (N_Tx_ant == 2)&(N_Rx_ant == 4)
+            % 2发4收STBC解码
+            output=stbc_decode_TX2RX4(H,R)
+
+        elseif (N_Tx_ant == 4)&(N_Rx_ant == 4)
+            % 2发4收STBC解码
+            output=stbc_decode_TX4RX4(H,R)
+    
+        else
+            st_decoded = input;
+        end
+    
+        
+% 使用空时格码    
+    elseif ST_Code == 2
+    
+    end
+
+end
+##### SOURCE END #####
+--></body></html>

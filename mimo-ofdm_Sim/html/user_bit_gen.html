@@ -1,0 +1,142 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>user_bit_gen</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-05-10"><meta name="DC.source" content="user_bit_gen.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> [user_bit,user_bit_cnt]  = user_bit_gen( N_user, N_data ,N_sym , Modulation )
+
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% &#21151;&#33021;:       &#20135;&#29983;&#19981;&#21516;&#29992;&#25143;&#19968;&#24103;&#20869;&#30340;&#21457;&#36865;&#27604;&#29305;</span>
+<span class="comment">%           &#29992;cell&#32467;&#26500;&#20307;&#23553;&#35013;&#19981;&#21516;&#29992;&#25143;&#30340;&#25968;&#25454;,&#22240;&#20026;cell&#32467;&#26500;&#20307;&#30340;&#30697;&#38453;&#20803;&#32032;&#21487;&#20197;&#32500;&#25968;&#19981;&#21516;</span>
+<span class="comment">% &#36755;&#20837;:     N_user,&#29992;&#25143;&#25968;</span>
+<span class="comment">%           N_data,&#25968;&#25454;&#23376;&#36733;&#27874;&#25968;</span>
+<span class="comment">%           N_sym,&#27599;&#24103;OFDM&#31526;&#21495;&#25968;</span>
+<span class="comment">%           Modulation, &#35843;&#21046;&#26041;&#24335;</span>
+<span class="comment">% &#36755;&#20986;:     user_bit, &#27599;&#20010;&#29992;&#25143;&#30340;&#27604;&#29305;&#24207;&#21015;,&#20026;cell&#32467;&#26500;</span>
+<span class="comment">%           user_bit_cnt, &#27599;&#20010;&#29992;&#25143;&#30340;&#24207;&#21015;&#38271;&#24230;</span>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% &#27599;&#20010;&#29992;&#25143;&#22312;&#19968;&#20010;OFDM&#31526;&#21495;&#26399;&#38388;&#21457;&#36865;&#30340;&#27604;&#29305;&#25968;</span>
+user_bit_tmp = cell( 1,N_user );
+bit_per_sym = Modulation * N_data;<span class="comment">%&#25152;&#26377;&#29992;&#25143;&#22312;&#19968;&#20010;OFDM&#31526;&#21495;&#20869;&#20256;&#36865;&#30340;&#24635;bit&#25968;</span>
+
+<span class="comment">% &#21487;&#20197;&#36873;&#25321;&#29992;&#25143;&#27604;&#29305;&#20998;&#24067;&#20026;&#65306;</span>
+<span class="comment">% 1) &#25152;&#26377;&#29992;&#25143;&#27604;&#29305;&#30456;&#21516;&#12290;</span>
+bit_cnt_sym = repmat(bit_per_sym/N_user,1,N_user);
+
+<span class="comment">% 2) &#29992;&#25143;&#25353;&#29031;&#27604;&#20363; (1:N_user)/((1 + N_user)*N_user/2) &#21457;&#36865;&#27604;&#29305;&#25968;&#25454;</span>
+<span class="comment">% &#30446;&#30340;&#26159;&#20026;&#20102;&#20223;&#30495;&#19981;&#21516;&#29992;&#25143;&#30340;&#20449;&#24687;&#27604;&#29305;&#38271;&#24230;&#19981;&#21516;&#30340;&#24773;&#20917;,&#20063;&#21487;&#20197;&#20462;&#25913;&#24471;&#21040;&#20854;&#20182;&#30340;&#29992;&#25143;&#25968;&#25454;&#27604;&#20363;</span>
+<span class="comment">% bit_cnt_sym = round( [1:N_user]/((1 + N_user)*N_user/2) * bit_per_sym );</span>
+
+user_bit_cnt = bit_cnt_sym * N_sym ;<span class="comment">%&#27599;&#29992;&#25143;&#19968;&#24103;&#20869;&#27604;&#29305;&#25968;</span>
+
+<span class="keyword">for</span> u = 1:N_user
+    user_bit_tmp{u} = rand (  user_bit_cnt(u) ,1 ) &gt; 0.5 ;<span class="comment">%&#20135;&#29983;&#20108;&#36827;&#21046;&#38543;&#26426;&#24207;&#21015;</span>
+<span class="keyword">end</span>
+
+
+user_bit = user_bit_tmp;
+</pre><pre class="codeoutput error">&#36755;&#20837;&#21442;&#25968;&#30340;&#25968;&#30446;&#19981;&#36275;&#12290;
+
+&#20986;&#38169; user_bit_gen (line 15)
+user_bit_tmp = cell( 1,N_user );
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+
+function [user_bit,user_bit_cnt]  = user_bit_gen( N_user, N_data ,N_sym , Modulation )
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 功能:       产生不同用户一帧内的发送比特
+%           用cell结构体封装不同用户的数据,因为cell结构体的矩阵元素可以维数不同
+% 输入:     N_user,用户数
+%           N_data,数据子载波数 
+%           N_sym,每帧OFDM符号数
+%           Modulation, 调制方式
+% 输出:     user_bit, 每个用户的比特序列,为cell结构
+%           user_bit_cnt, 每个用户的序列长度
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 每个用户在一个OFDM符号期间发送的比特数
+user_bit_tmp = cell( 1,N_user );
+bit_per_sym = Modulation * N_data;%所有用户在一个OFDM符号内传送的总bit数
+
+% 可以选择用户比特分布为：
+% 1) 所有用户比特相同。 
+bit_cnt_sym = repmat(bit_per_sym/N_user,1,N_user);
+
+% 2) 用户按照比例 (1:N_user)/((1 + N_user)*N_user/2) 发送比特数据
+% 目的是为了仿真不同用户的信息比特长度不同的情况,也可以修改得到其他的用户数据比例
+% bit_cnt_sym = round( [1:N_user]/((1 + N_user)*N_user/2) * bit_per_sym );
+
+user_bit_cnt = bit_cnt_sym * N_sym ;%每用户一帧内比特数
+
+for u = 1:N_user 
+    user_bit_tmp{u} = rand (  user_bit_cnt(u) ,1 ) > 0.5 ;%产生二进制随机序列
+end
+
+
+user_bit = user_bit_tmp;
+##### SOURCE END #####
+--></body></html>

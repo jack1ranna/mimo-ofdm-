@@ -1,0 +1,101 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>gausnoise</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-05-10"><meta name="DC.source" content="gausnoise.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> noise=gausnoise(Eb_No_dB,transmit_signal_power,length_noise)
+<span class="comment">%&#26681;&#25454;&#20449;&#22122;&#27604;&#20135;&#29983;&#39640;&#26031;&#30333;&#22122;&#22768;&#24207;&#21015;</span>
+            linear_Eb_No_dB=10^(Eb_No_dB/10);<span class="comment">%&#32447;&#24615;&#20449;&#22122;&#27604;</span>
+            noise_sigma=transmit_signal_power/linear_Eb_No_dB;
+            noise_scale_factor = sqrt(noise_sigma/2);<span class="comment">%&#26631;&#20934;&#24046;sigma</span>
+            realnoise=randn(1,length_noise,2);<span class="comment">%&#20135;&#29983;&#27491;&#24577;&#20998;&#24067;&#22122;&#22768;&#24207;&#21015;&#23454;&#37096;</span>
+            realnoise(:,:,1)=realnoise(:,:,1).*noise_scale_factor(1);
+            realnoise(:,:,2)=realnoise(:,:,2).*noise_scale_factor(2);
+            imagnoise=randn(1,length_noise,2);<span class="comment">%&#20135;&#29983;&#27491;&#24577;&#20998;&#24067;&#22122;&#22768;&#24207;&#21015;&#34394;&#27493;</span>
+            imagnoise(:,:,1)=imagnoise(:,:,1).*noise_scale_factor(1);
+            imagnoise(:,:,2)=imagnoise(:,:,2).*noise_scale_factor(2);
+            noise=complex(realnoise,imagnoise);<span class="comment">%&#22797;&#22122;&#22768;&#24207;&#21015;</span>
+</pre><pre class="codeoutput error">&#36755;&#20837;&#21442;&#25968;&#30340;&#25968;&#30446;&#19981;&#36275;&#12290;
+
+&#20986;&#38169; gausnoise (line 3)
+            linear_Eb_No_dB=10^(Eb_No_dB/10);%&#32447;&#24615;&#20449;&#22122;&#27604; 
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function noise=gausnoise(Eb_No_dB,transmit_signal_power,length_noise)
+%根据信噪比产生高斯白噪声序列
+            linear_Eb_No_dB=10^(Eb_No_dB/10);%线性信噪比 
+            noise_sigma=transmit_signal_power/linear_Eb_No_dB;
+            noise_scale_factor = sqrt(noise_sigma/2);%标准差sigma
+            realnoise=randn(1,length_noise,2);%产生正态分布噪声序列实部
+            realnoise(:,:,1)=realnoise(:,:,1).*noise_scale_factor(1);
+            realnoise(:,:,2)=realnoise(:,:,2).*noise_scale_factor(2);
+            imagnoise=randn(1,length_noise,2);%产生正态分布噪声序列虚步
+            imagnoise(:,:,1)=imagnoise(:,:,1).*noise_scale_factor(1);
+            imagnoise(:,:,2)=imagnoise(:,:,2).*noise_scale_factor(2);
+            noise=complex(realnoise,imagnoise);%复噪声序列
+##### SOURCE END #####
+--></body></html>

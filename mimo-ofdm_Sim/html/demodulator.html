@@ -1,0 +1,151 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>demodulator</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-05-10"><meta name="DC.source" content="demodulator.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> demod_user_bit = demodulator( st_decoded, user_subc_alloc ,mod_subc ,<span class="keyword">...</span>
+                        pad_bit_cnt, N_sym, AdptMod )
+
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% &#35299;&#35843;,&#36755;&#20986;&#32463;&#36807;&#21028;&#20915;&#30340;&#27604;&#29305;&#24207;&#21015;</span>
+<span class="comment">% st_decoded, N_subc &#34892;&#30340;&#21521;&#37327;</span>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+demod_user_bit = [];
+p = 1;
+
+<span class="keyword">for</span> n = 1:N_sym
+      <span class="comment">% &#22914;&#26524;&#20351;&#29992;&#33258;&#36866;&#24212;&#35843;&#21046;,&#38656;&#35201;&#36880;&#23376;&#36733;&#27874;&#36827;&#34892;&#35299;&#35843;</span>
+
+      <span class="keyword">if</span> AdptMod == 1
+          <span class="keyword">for</span> k = 1:length(user_subc_alloc)
+              subc_k = user_subc_alloc(k);   <span class="comment">% &#23376;&#36733;&#27874;&#21495;</span>
+              bit_k = mod_subc(k);           <span class="comment">% &#23545;&#24212;&#23376;&#36733;&#27874;&#30340;&#35843;&#21046;&#26041;&#24335;</span>
+              <span class="keyword">if</span> bit_k ~= 0
+                    <span class="comment">%&#12288;&#21462;&#20986;&#31526;&#21495;,&#36827;&#34892;&#35299;&#35843;</span>
+                    bit_out = demodu_sym(st_decoded(subc_k,n),bit_k);
+
+                    demod_user_bit = [ demod_user_bit ; bit_out];
+              <span class="keyword">end</span>
+          <span class="keyword">end</span>
+      <span class="keyword">else</span>
+          <span class="comment">% &#22914;&#26524;&#26080;&#33258;&#36866;&#24212;&#35843;&#21046;,&#21487;&#20197;&#25226;&#24403;&#21069;&#29992;&#25143;&#22312;&#26412;OFDM&#31526;&#21495;&#20013;&#30340;&#25152;&#26377;&#23376;&#36733;&#27874;</span>
+          <span class="comment">% &#32452;&#25104;&#21521;&#37327;,&#36865;&#20837;&#35299;&#35843;&#22120;</span>
+          mod_type = mod_subc(1);       <span class="comment">% &#25152;&#26377;&#23376;&#36733;&#27874;&#35843;&#21046;&#26041;&#24335;&#30456;&#21516;</span>
+          bit_out = demodu_sym(st_decoded(user_subc_alloc,n).' , mod_type);
+          demod_user_bit = [ demod_user_bit ; bit_out(:)]; <span class="comment">% &#36716;&#20026;&#21015;&#21521;&#37327;</span>
+      <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+demod_user_bit = demod_user_bit( 1: end - pad_bit_cnt );
+</pre><pre class="codeoutput error">&#36755;&#20837;&#21442;&#25968;&#30340;&#25968;&#30446;&#19981;&#36275;&#12290;
+
+&#20986;&#38169; demodulator (line 12)
+for n = 1:N_sym
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function demod_user_bit = demodulator( st_decoded, user_subc_alloc ,mod_subc ,...
+                        pad_bit_cnt, N_sym, AdptMod )   
+                    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 解调,输出经过判决的比特序列                  
+% st_decoded, N_subc 行的向量
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+demod_user_bit = [];
+p = 1;
+
+for n = 1:N_sym
+      % 如果使用自适应调制,需要逐子载波进行解调
+
+      if AdptMod == 1
+          for k = 1:length(user_subc_alloc)
+              subc_k = user_subc_alloc(k);   % 子载波号
+              bit_k = mod_subc(k);           % 对应子载波的调制方式
+              if bit_k ~= 0
+                    %　取出符号,进行解调
+                    bit_out = demodu_sym(st_decoded(subc_k,n),bit_k);
+                    
+                    demod_user_bit = [ demod_user_bit ; bit_out];
+              end
+          end
+      else
+          % 如果无自适应调制,可以把当前用户在本OFDM符号中的所有子载波
+          % 组成向量,送入解调器
+          mod_type = mod_subc(1);       % 所有子载波调制方式相同
+          bit_out = demodu_sym(st_decoded(user_subc_alloc,n).' , mod_type);
+          demod_user_bit = [ demod_user_bit ; bit_out(:)]; % 转为列向量
+      end
+end
+
+demod_user_bit = demod_user_bit( 1: end - pad_bit_cnt );
+
+
+
+
+##### SOURCE END #####
+--></body></html>

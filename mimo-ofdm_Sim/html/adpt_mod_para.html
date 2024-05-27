@@ -1,0 +1,386 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>adpt_mod_para</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-05-10"><meta name="DC.source" content="adpt_mod_para.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span>   [user_subc_alloc , mod_subc ,pwr_subc ,pad_bit_cnt] = adpt_mod_para<span class="keyword">...</span>
+                ( coded_user_bit,N_sym,Idx_data ,AllocMethod , AdptMethod, H , var_noise, TargetBer );
+
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% &#21151;&#33021;:&#33258;&#36866;&#24212;&#35843;&#21046;&#21644;&#22810;&#29992;&#25143;&#22797;&#29992;</span>
+
+<span class="comment">% &#36755;&#20837;:     coded_user_bit, &#36755;&#20837;&#29992;&#25143;&#27604;&#29305;&#24207;&#21015;,&#20026;cell&#32467;&#26500;</span>
+<span class="comment">%           N_sym, &#26412;&#24103;&#20013;&#30340;OFDM&#31526;&#21495;&#20010;&#25968;</span>
+<span class="comment">%           Idx_data, &#25968;&#25454;OFDM&#31526;&#21495;&#30340;&#23376;&#36733;&#27874;&#26631;&#21495;</span>
+<span class="comment">%           AllocMethod, &#23376;&#36733;&#27874;&#20998;&#37197;&#26041;&#27861;, 1--&#30456;&#37051;&#20998;&#37197;, 2--&#20132;&#32455;&#20998;&#37197;, 3---&#36339;&#39057;&#20998;&#37197;,4--&#33258;&#36866;&#24212;&#23376;&#36733;&#27874;&#20998;&#37197;</span>
+<span class="comment">%           AdptMethod, &#33258;&#36866;&#24212;&#35843;&#21046;&#26041;&#27861;</span>
+<span class="comment">%           H, &#39057;&#22495;&#20449;&#36947;&#21709;&#24212;</span>
+<span class="comment">%           var_noise, &#22122;&#22768;&#26679;&#28857;&#30340;&#21151;&#29575;</span>
+<span class="comment">%           TargetBer, &#30446;&#26631;&#35823;&#27604;&#29305;&#29575;</span>
+<span class="comment">%&#36755;&#20986;:      user_subc_alloc, &#29992;&#25143;&#20998;&#37197;&#30340;&#23376;&#36733;&#27874;&#24207;&#21495;,&#20026;cell&#32467;&#26500;</span>
+<span class="comment">%           pad_bit_cnt, &#20026;&#20445;&#35777;&#29992;&#25143;&#27604;&#29305;&#22312;&#35843;&#21046;&#22120;&#20013;&#33021;&#27491;&#30830;&#35843;&#21046;,&#38656;&#35201;&#22635;&#20805;&#30340;&#27604;&#29305;&#25968;</span>
+<span class="comment">%           mod_subc, &#29992;&#25143;&#23545;&#24212;user_subc_alloc&#23376;&#36733;&#27874;&#19978;&#30340;&#35843;&#21046;&#26041;&#24335;,&#20026;cell&#32467;&#26500;</span>
+<span class="comment">%           pwr_subc, &#29992;&#25143;&#23545;&#24212;user_subc_alloc&#23376;&#36733;&#27874;&#19978;&#30340;&#21151;&#29575;,&#20026;cell&#32467;&#26500;</span>
+
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+<span class="keyword">if</span> nargin == 4
+
+    <span class="comment">% &#19981;&#20351;&#29992;&#33258;&#36866;&#24212;&#35843;&#21046;, &#23545;&#22810;&#20010;&#29992;&#25143;&#30340;&#25968;&#25454;&#20351;&#29992;&#22266;&#23450;&#30340;&#23376;&#36733;&#27874;&#20998;&#37197;&#26041;&#27861; , &#27599;&#20010;&#29992;&#25143;&#30340;&#23376;&#36733;&#27874;</span>
+    <span class="comment">% &#22343;&#20351;&#29992;&#30456;&#21516;&#30340;&#26143;&#24231;&#35843;&#21046;&#26041;&#24335; ; &#19981;&#21516;&#29992;&#25143;&#30340;&#23376;&#36733;&#27874;&#21487;&#33021;&#20250;&#20351;&#29992;&#19981;&#21516;&#30340;&#35843;&#21046;&#26041;&#24335;</span>
+
+    N_user = size(coded_user_bit,2);<span class="comment">%&#26681;&#25454;&#24471;&#21040;&#30340;&#29992;&#25143;&#25968;&#25454;&#35745;&#31639;&#29992;&#25143;&#25968;</span>
+    num_subc_user = length(Idx_data) / N_user ;   <span class="comment">% &#24179;&#22343;&#20998;&#37197;,&#27599;&#20010;&#29992;&#25143;&#30340;&#23376;&#36733;&#27874;&#25968; Idx_data&#20026;&#25968;&#25454;&#23376;&#36733;&#27874;&#22352;&#26631;</span>
+    user_subc_alloc = cell(1,N_user);
+    mod_subc = cell(1,N_user);
+    pwr_subc = cell(1,N_user);
+
+    <span class="keyword">for</span> u = 1:N_user
+        <span class="comment">% &#20808;&#35745;&#31639;&#20986;&#20026;&#20445;&#35777;&#25152;&#26377;&#29992;&#25143;&#30340;&#27604;&#29305;&#24688;&#22909;&#20998;&#23436;, &#38656;&#35201;&#22635;&#20805;&#30340;&#27604;&#29305;&#25968;, &#22312;&#26412;&#24103;&#26411;&#23614;&#22635;&#20805;&#38646;</span>
+        <span class="comment">% &#27599;&#20010;&#29992;&#25143;&#27599;&#20010;OFDM&#31526;&#21495;&#30340;&#27604;&#29305;&#25968;</span>
+        userbit_sym = length(coded_user_bit{u})/N_sym;     <span class="comment">%N_sym&#20026;&#19968;&#24103;&#25152;&#21253;&#21547;&#30340;OFDM&#31526;&#21495;&#25968;</span>
+        <span class="comment">% &#27599;&#20010;&#29992;&#25143;&#20351;&#29992;&#30340;&#35843;&#21046;&#26041;&#24335;</span>
+        mod_user = ceil(userbit_sym / num_subc_user);
+         <span class="comment">% &#35843;&#21046;&#26041;&#24335;&#23545;&#24212;: 1--BPSK&#35843;&#21046;, 2--QPSK&#35843;&#21046;,3--8PSK&#35843;&#21046;, 4--16QAM&#35843;&#21046;,6--64QAM&#35843;&#21046;</span>
+        <span class="keyword">if</span> mod_user &gt; 6
+            error(<span class="string">'&#21333;&#20010;&#29992;&#25143;&#27604;&#29305;&#25968;&#22826;&#22810;,&#26080;&#27861;&#36827;&#34892;&#35843;&#21046;,&#23376;&#31243;&#24207;adpt_mod_para&#20986;&#38169;!'</span>);
+        <span class="keyword">elseif</span> mod_user == 5
+            mod_user = 6;
+        <span class="keyword">end</span>
+        pad_bit_cnt(u) = mod_user * num_subc_user * N_sym - length(coded_user_bit{u}) ;<span class="comment">%&#38656;&#35201;&#22635;&#20805;&#30340;0&#30340;&#20010;&#25968;</span>
+
+
+        <span class="comment">% &#28982;&#21518;&#26681;&#25454;&#36873;&#25321;&#30340;&#22266;&#23450;&#23376;&#36733;&#27874;&#20998;&#37197;&#26041;&#27861;( 1--&#30456;&#37051;&#20998;&#37197;, 2--&#20132;&#32455;&#20998;&#37197;, 3---&#36339;&#39057;&#20998;&#37197; )</span>
+        <span class="comment">% &#25226;&#23376;&#36733;&#27874;&#22343;&#21248;&#22320;&#20998;&#37197;&#32473;&#29992;&#25143;. &#29992;&#25143;&#30340;&#27604;&#29305;&#25968;&#19981;&#21516;, &#20250;&#36896;&#25104;&#19981;&#21516;&#29992;&#25143;&#30340;&#35843;&#21046;&#26041;&#24335;&#21644;</span>
+        <span class="comment">% &#22635;&#20805;&#27604;&#29305;&#25968;&#30340;&#19981;&#21516;</span>
+
+        <span class="keyword">switch</span> AllocMethod
+
+        <span class="keyword">case</span>    1           <span class="comment">% &#30456;&#37051;&#20998;&#37197;</span>
+            <span class="comment">%user_subc_alloc((u-1)*num_subc_user + 1: u*num_subc_user) = u;</span>
+            user_subc_alloc{u} = Idx_data((u-1)*num_subc_user + 1: u*num_subc_user)';<span class="comment">%&#27599;&#20010;&#29992;&#25143;&#30340;&#23376;&#36733;&#27874;&#36830;&#32493;&#20998;&#37197;&#65292;&#19981;&#21516;&#29992;&#25143;&#23376;&#36733;&#27874;&#30456;&#37051;&#20998;&#37197;&#65292;&#21363;&#23616;&#22495;&#21270;&#26144;&#23556;</span>
+            mod_subc{u} = mod_user*ones(num_subc_user, 1);
+            pwr_subc{u} = ones(num_subc_user,1);
+
+        <span class="keyword">case</span>    2           <span class="comment">% &#20132;&#32455;&#20998;&#37197;</span>
+
+        <span class="keyword">case</span>    3           <span class="comment">% &#36339;&#39057;&#20998;&#37197;</span>
+
+        <span class="keyword">otherwise</span>
+
+        <span class="keyword">end</span>
+
+    <span class="keyword">end</span>
+
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+<span class="keyword">else</span>
+    <span class="comment">% &#20351;&#29992;&#33258;&#36866;&#24212;&#35843;&#21046;, &#22810;&#29992;&#25143;&#23376;&#36733;&#27874;&#20998;&#37197;&#26041;&#27861;&#30001;AllocMethod&#30830;&#23450;, &#33258;&#36866;&#24212;&#35843;&#21046;&#26041;&#27861;&#30001;AdptMethod&#30830;&#23450;</span>
+
+    <span class="comment">% &#22914;&#26524;&#20351;&#29992;&#22266;&#23450;&#23376;&#36733;&#27874;&#20998;&#37197;&#26041;&#27861;</span>
+    <span class="keyword">if</span> (AllocMethod == 1) | (AllocMethod == 2) | (AllocMethod == 3)
+
+        N_user = size(coded_user_bit,2);
+        N_data = length(Idx_data);
+        <span class="comment">% &#24179;&#22343;&#20998;&#37197;,&#27599;&#20010;&#29992;&#25143;&#30340;&#23376;&#36733;&#27874;&#25968;</span>
+        num_subc_user = N_data / N_user;
+        user_subc_alloc = cell(1,N_user);
+        mod_subc = cell(1,N_user);
+        pwr_subc = cell(1,N_user);
+
+        <span class="keyword">for</span> u = 1:N_user
+
+            <span class="comment">% &#20808;&#35745;&#31639;&#20986;,&#20026;&#20445;&#35777;&#27599;&#20010;&#29992;&#25143;&#27599;&#20010;OFDM&#31526;&#21495;&#30340;&#27604;&#29305;&#25968;&#20026;&#35843;&#25972;&#27493;&#38271;&#30340;&#25972;&#25968;&#20493;, &#38656;&#35201;&#22635;&#20805;&#30340;&#27604;&#29305;&#25968;</span>
+            <span class="comment">% &#22914;&#26524;&#20351;&#29992;&#22522;&#20110;&#21151;&#29575;&#26799;&#24230;&#26368;&#23567;&#30340;QAM &#31639;&#27861;, &#20998;&#37197;&#32473;&#21508;&#23376;&#36733;&#27874;&#30340;&#27604;&#29305;&#25968;&#20026;0,2,4,6, &#27493;&#38271;&#20026;2</span>
+            step = 2;
+
+            <span class="comment">% &#27599;&#20010;&#29992;&#25143;&#26412;&#24103;&#38656;&#35201;&#22635;&#20805;&#30340;&#27604;&#29305;&#25968;</span>
+            <span class="keyword">if</span> mod(length(coded_user_bit{u}) , step*N_sym) ~= 0
+                pad_bit_cnt(u) = step*N_sym - mod(length(coded_user_bit{u}) , step*N_sym);
+            <span class="keyword">else</span>
+                pad_bit_cnt(u) = 0;
+            <span class="keyword">end</span>
+
+            <span class="comment">% &#27599;&#20010;&#29992;&#25143;&#27599;&#20010;OFDM&#31526;&#21495;&#30340;&#27604;&#29305;&#25968;</span>
+            num_userbit_sym = (length(coded_user_bit{u}) + pad_bit_cnt(u))/N_sym;
+
+            <span class="keyword">switch</span> AllocMethod
+                <span class="keyword">case</span>    1           <span class="comment">% &#30456;&#37051;&#20998;&#37197;</span>
+                    <span class="comment">%user_subc_alloc((u-1)*num_subc_user + 1: u*num_subc_user) = u;</span>
+                    user_subc_alloc{u} = Idx_data((u-1)*num_subc_user + 1: u*num_subc_user)';
+                    <span class="comment">%mod_subc{u} = mod_user*ones(num_subc_user, 1);</span>
+                    <span class="comment">%pwr_subc{u} = ones(num_subc_user,1);</span>
+
+                <span class="keyword">case</span>    2           <span class="comment">% &#20132;&#32455;&#20998;&#37197;</span>
+
+                <span class="keyword">case</span>    3           <span class="comment">% &#36339;&#39057;&#20998;&#37197;</span>
+
+                <span class="keyword">otherwise</span>
+            <span class="keyword">end</span>
+
+            <span class="comment">% &#24403;&#21069;&#29992;&#25143;&#23545;&#24212;&#23376;&#36733;&#27874;&#30340;&#20449;&#36947;&#30456;&#24212;</span>
+            H_user = H{u}(user_subc_alloc{u},1,1);
+
+            <span class="keyword">switch</span> AdptMethod
+                <span class="comment">% &#33258;&#36866;&#24212;&#35843;&#21046;&#26041;&#27861;1, &#32473;&#21151;&#29575;&#22686;&#21152;&#26368;&#23567;&#30340;&#23376;&#36733;&#27874;&#20998;&#37197;&#27604;&#29305;&#21644;&#21151;&#29575;</span>
+                <span class="keyword">case</span>    1
+                    [mod_subc{u},pwr_subc{u}]=adaptive_power1(H_user,TargetBer,<span class="keyword">...</span>
+                                          num_subc_user,var_noise,num_userbit_sym);
+
+                <span class="comment">% &#33258;&#36866;&#24212;&#35843;&#21046;&#26041;&#27861;2, &#32473;&#35823;&#27604;&#29305;&#24615;&#33021;&#38477;&#20302;&#26368;&#23567;&#30340;&#23376;&#36733;&#27874;&#20998;&#37197;&#27604;&#29305;&#21644;&#22686;&#21152;&#21151;&#29575;</span>
+                <span class="keyword">case</span>    2
+
+                <span class="comment">% &#33258;&#36866;&#24212;&#35843;&#21046;&#26041;&#27861;3, &#25353;&#29031;&#20449;&#36947;&#21709;&#24212;&#38477;&#24207;&#25490;&#21015;,&#23376;&#36733;&#27874;&#38388;&#20105;&#22842;&#27604;&#29305;( &#21151;&#29575;?? )</span>
+                <span class="keyword">case</span>    3
+                    mod_subc{u} =adaptive(H_user,num_subc_user,num_userbit_sym);
+                    pwr_subc{u} = ones(num_subc_user,1);
+
+                <span class="keyword">otherwise</span>
+            <span class="keyword">end</span>
+
+        <span class="keyword">end</span>
+
+    <span class="keyword">elseif</span>  (AllocMethod == 4)           <span class="comment">% &#33258;&#36866;&#24212;&#23376;&#36733;&#27874;&#20998;&#37197;</span>
+
+        <span class="comment">% &#33258;&#36866;&#24212;&#23376;&#36733;&#27874;&#21644;&#27604;&#29305;&#21151;&#29575;&#20998;&#37197;</span>
+        <span class="keyword">for</span> u = 1:N_user
+            <span class="comment">% &#20808;&#35745;&#31639;&#38656;&#35201;&#22635;&#20805;&#30340;&#27604;&#29305;&#25968;</span>
+            step = 2;
+            <span class="comment">% &#27599;&#20010;&#29992;&#25143;&#26412;&#24103;&#38656;&#35201;&#22635;&#20805;&#30340;&#27604;&#29305;&#25968;</span>
+            pad_bit_cnt(u) = step*N_sym - mod(length(coded_user_bit{u}) , step*N_sym);
+            <span class="comment">% &#27599;&#20010;&#29992;&#25143;&#27599;&#20010;OFDM&#31526;&#21495;&#30340;&#27604;&#29305;&#25968;</span>
+            num_userbit_sym(u) = (length(coded_user_bit{u}) + pad_bit_cnt(u))/N_sym;
+        <span class="keyword">end</span>
+        <span class="comment">% &#27492;&#20989;&#25968;&#26410;&#20889;</span>
+        adaptive_pwr_subc ( H(:,1) ,N_data, var_noise, num_userbit_sym );
+
+    <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">&#36755;&#20837;&#21442;&#25968;&#30340;&#25968;&#30446;&#19981;&#36275;&#12290;
+
+&#20986;&#38169; adpt_mod_para (line 77)
+    if (AllocMethod == 1) | (AllocMethod == 2) | (AllocMethod == 3)
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+
+function   [user_subc_alloc , mod_subc ,pwr_subc ,pad_bit_cnt] = adpt_mod_para... 
+                ( coded_user_bit,N_sym,Idx_data ,AllocMethod , AdptMethod, H , var_noise, TargetBer );
+            
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 功能:自适应调制和多用户复用
+
+% 输入:     coded_user_bit, 输入用户比特序列,为cell结构
+%           N_sym, 本帧中的OFDM符号个数
+%           Idx_data, 数据OFDM符号的子载波标号
+%           AllocMethod, 子载波分配方法, 1REPLACE_WITH_DASH_DASH相邻分配, 2REPLACE_WITH_DASH_DASH交织分配, 3REPLACE_WITH_DASH_DASH-跳频分配,4REPLACE_WITH_DASH_DASH自适应子载波分配
+%           AdptMethod, 自适应调制方法
+%           H, 频域信道响应
+%           var_noise, 噪声样点的功率
+%           TargetBer, 目标误比特率
+%输出:      user_subc_alloc, 用户分配的子载波序号,为cell结构
+%           pad_bit_cnt, 为保证用户比特在调制器中能正确调制,需要填充的比特数
+%           mod_subc, 用户对应user_subc_alloc子载波上的调制方式,为cell结构
+%           pwr_subc, 用户对应user_subc_alloc子载波上的功率,为cell结构 
+            
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if nargin == 4
+    
+    % 不使用自适应调制, 对多个用户的数据使用固定的子载波分配方法 , 每个用户的子载波
+    % 均使用相同的星座调制方式 ; 不同用户的子载波可能会使用不同的调制方式
+    
+    N_user = size(coded_user_bit,2);%根据得到的用户数据计算用户数
+    num_subc_user = length(Idx_data) / N_user ;   % 平均分配,每个用户的子载波数 Idx_data为数据子载波坐标
+    user_subc_alloc = cell(1,N_user);
+    mod_subc = cell(1,N_user);
+    pwr_subc = cell(1,N_user);
+    
+    for u = 1:N_user
+        % 先计算出为保证所有用户的比特恰好分完, 需要填充的比特数, 在本帧末尾填充零
+        % 每个用户每个OFDM符号的比特数
+        userbit_sym = length(coded_user_bit{u})/N_sym;     %N_sym为一帧所包含的OFDM符号数
+        % 每个用户使用的调制方式
+        mod_user = ceil(userbit_sym / num_subc_user);     
+         % 调制方式对应: 1REPLACE_WITH_DASH_DASHBPSK调制, 2REPLACE_WITH_DASH_DASHQPSK调制,3REPLACE_WITH_DASH_DASH8PSK调制, 4REPLACE_WITH_DASH_DASH16QAM调制,6REPLACE_WITH_DASH_DASH64QAM调制
+        if mod_user > 6
+            error('单个用户比特数太多,无法进行调制,子程序adpt_mod_para出错!');
+        elseif mod_user == 5 
+            mod_user = 6;                  
+        end                                  
+        pad_bit_cnt(u) = mod_user * num_subc_user * N_sym - length(coded_user_bit{u}) ;%需要填充的0的个数
+    
+    
+        % 然后根据选择的固定子载波分配方法( 1REPLACE_WITH_DASH_DASH相邻分配, 2REPLACE_WITH_DASH_DASH交织分配, 3REPLACE_WITH_DASH_DASH-跳频分配 )
+        % 把子载波均匀地分配给用户. 用户的比特数不同, 会造成不同用户的调制方式和
+        % 填充比特数的不同
+    
+        switch AllocMethod
+           
+        case    1           % 相邻分配 
+            %user_subc_alloc((u-1)*num_subc_user + 1: u*num_subc_user) = u;
+            user_subc_alloc{u} = Idx_data((u-1)*num_subc_user + 1: u*num_subc_user)';%每个用户的子载波连续分配，不同用户子载波相邻分配，即局域化映射
+            mod_subc{u} = mod_user*ones(num_subc_user, 1);
+            pwr_subc{u} = ones(num_subc_user,1);
+            
+        case    2           % 交织分配
+            
+        case    3           % 跳频分配 
+        
+        otherwise
+        
+        end
+    
+    end
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+else
+    % 使用自适应调制, 多用户子载波分配方法由AllocMethod确定, 自适应调制方法由AdptMethod确定
+    
+    % 如果使用固定子载波分配方法
+    if (AllocMethod == 1) | (AllocMethod == 2) | (AllocMethod == 3)
+        
+        N_user = size(coded_user_bit,2);
+        N_data = length(Idx_data);
+        % 平均分配,每个用户的子载波数
+        num_subc_user = N_data / N_user;   
+        user_subc_alloc = cell(1,N_user);
+        mod_subc = cell(1,N_user);
+        pwr_subc = cell(1,N_user);
+        
+        for u = 1:N_user
+            
+            % 先计算出,为保证每个用户每个OFDM符号的比特数为调整步长的整数倍, 需要填充的比特数
+            % 如果使用基于功率梯度最小的QAM 算法, 分配给各子载波的比特数为0,2,4,6, 步长为2
+            step = 2;
+            
+            % 每个用户本帧需要填充的比特数      
+            if mod(length(coded_user_bit{u}) , step*N_sym) ~= 0
+                pad_bit_cnt(u) = step*N_sym - mod(length(coded_user_bit{u}) , step*N_sym);
+            else
+                pad_bit_cnt(u) = 0;
+            end
+            
+            % 每个用户每个OFDM符号的比特数
+            num_userbit_sym = (length(coded_user_bit{u}) + pad_bit_cnt(u))/N_sym;
+   
+            switch AllocMethod
+                case    1           % 相邻分配
+                    %user_subc_alloc((u-1)*num_subc_user + 1: u*num_subc_user) = u;
+                    user_subc_alloc{u} = Idx_data((u-1)*num_subc_user + 1: u*num_subc_user)';
+                    %mod_subc{u} = mod_user*ones(num_subc_user, 1);
+                    %pwr_subc{u} = ones(num_subc_user,1);
+            
+                case    2           % 交织分配
+            
+                case    3           % 跳频分配 
+        
+                otherwise
+            end
+            
+            % 当前用户对应子载波的信道相应
+            H_user = H{u}(user_subc_alloc{u},1,1);             
+            
+            switch AdptMethod
+                % 自适应调制方法1, 给功率增加最小的子载波分配比特和功率
+                case    1               
+                    [mod_subc{u},pwr_subc{u}]=adaptive_power1(H_user,TargetBer,...
+                                          num_subc_user,var_noise,num_userbit_sym);
+                                      
+                % 自适应调制方法2, 给误比特性能降低最小的子载波分配比特和增加功率
+                case    2              
+                    
+                % 自适应调制方法3, 按照信道响应降序排列,子载波间争夺比特( 功率?? )
+                case    3               
+                    mod_subc{u} =adaptive(H_user,num_subc_user,num_userbit_sym);
+                    pwr_subc{u} = ones(num_subc_user,1);
+                    
+                otherwise
+            end
+    
+        end
+        
+    elseif  (AllocMethod == 4)           % 自适应子载波分配
+        
+        % 自适应子载波和比特功率分配
+        for u = 1:N_user
+            % 先计算需要填充的比特数
+            step = 2;
+            % 每个用户本帧需要填充的比特数              
+            pad_bit_cnt(u) = step*N_sym - mod(length(coded_user_bit{u}) , step*N_sym);
+            % 每个用户每个OFDM符号的比特数
+            num_userbit_sym(u) = (length(coded_user_bit{u}) + pad_bit_cnt(u))/N_sym;
+        end
+        % 此函数未写
+        adaptive_pwr_subc ( H(:,1) ,N_data, var_noise, num_userbit_sym );
+        
+    end
+    
+end    
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,168 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>st_coding</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-05-10"><meta name="DC.source" content="st_coding.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> st_coded = st_coding( mod_sym,N_Tx_ant,ST_Code)
+
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% &#21457;&#36865;&#20998;&#38598; , 2&#21457;&#25110;4&#21457;</span>
+
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+
+[N_subc,N_sym] = size(mod_sym);
+
+<span class="comment">% &#22914;&#26524;&#26377;&#21457;&#36865;&#20998;&#38598;</span>
+<span class="keyword">if</span> N_Tx_ant ~= 1
+    <span class="comment">% &#20351;&#29992;&#31354;&#26102;&#20998;&#32452;&#30721;</span>
+    <span class="keyword">if</span> ST_Code == 1
+        st_coded = zeros(N_subc,N_sym, N_Tx_ant);
+        <span class="keyword">if</span> (mod(N_sym,N_Tx_ant))
+            error(<span class="string">'&#31354;&#26102;&#32534;&#30721;&#22120;&#36755;&#20837;&#31526;&#21495;&#19981;&#21305;&#37197;,&#23376;&#31243;&#24207;st_coding&#20986;&#38169;'</span>);
+        <span class="keyword">else</span>
+            <span class="keyword">for</span> n = 1:N_sym/N_Tx_ant
+                <span class="comment">% &#19968;&#27425;&#36865;&#20837;&#31354;&#26102;&#32534;&#30721;&#22120;&#30340;OFDM&#31526;&#21495;&#26377;N_Tx_ant&#20010;&#65292;&#22914;&#21457;&#36865;&#22825;&#32447;&#20026;2&#65292;&#21017;&#19968;&#27425;&#36865;&#20837;&#20004;&#20010;OFDM&#31526;&#21495;&#36827;&#34892;Alamouti&#32534;&#30721;</span>
+                coded_tmp = stbc_code_TX( mod_sym( :,(n-1)*N_Tx_ant+1 : n*N_Tx_ant ) );
+                <span class="comment">% coded_tmp&#30340;&#32467;&#26500;: &#27599;&#21015;&#20195;&#34920;&#19968;&#26465;&#22825;&#32447;&#21457;&#20986;&#30340;&#25968;&#25454;,&#26377;N_Tx_ant*N_subc</span>
+                <span class="comment">% &#20010;&#26679;&#28857;, &#32780;&#19968;&#20849;&#26377;N_Tx_ant&#21015;,&#20195;&#34920;&#19981;&#21516;&#22825;&#32447;&#30340;&#25968;&#25454;</span>
+
+                <span class="comment">% &#36716;&#21270;&#20026;&#32467;&#26500;:&#26377; N_subc&#34892;, &#20195;&#34920;&#19981;&#21516;&#26102;&#38388;OFDM&#31526;&#21495;&#30340;N_Tx_ant&#21015;,</span>
+                <span class="comment">% &#30697;&#38453;&#31532;&#19977;&#32500;&#20026;N_Tx_ant&#20010;,&#20195;&#34920;&#19981;&#21516;&#22825;&#32447;&#30340;&#25968;&#25454;</span>
+                <span class="keyword">for</span> ant = 1:N_Tx_ant
+                    tmp = reshape(coded_tmp(:,ant), N_subc, N_Tx_ant);<span class="comment">%&#31532;&#19968;&#26681;&#22825;&#32447;&#21457;&#36865;&#30340;&#21069;&#20004;&#20010;&#31526;&#21495;&#20026;[Xe,-conj(Xo)]</span>
+                    <span class="comment">% &#25226;&#35843;&#25972;&#21518;&#30340;&#31526;&#21495;&#22359;,&#25918;&#22312;&#36755;&#20986;&#31526;&#21495;&#30340;&#30456;&#24212;&#20301;&#32622;</span>
+                    st_coded(:, (n-1)*N_Tx_ant+1:n*N_Tx_ant ,ant) = tmp;<span class="comment">%&#21033;&#29992;&#31532;&#19977;&#32500;&#34920;&#31034;&#19981;&#21516;&#22825;&#32447;&#21457;&#36865;&#30340;OFDM&#31526;&#21495;</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+        <span class="comment">% &#20351;&#29992;&#31354;&#26102;&#26684;&#30721;</span>
+    <span class="keyword">elseif</span> ST_Code == 2
+
+
+    <span class="keyword">end</span>
+
+    <span class="comment">% &#22914;&#26524;&#27809;&#26377;&#21457;&#36865;&#20998;&#38598;</span>
+<span class="keyword">else</span>
+    st_coded = mod_sym;
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">&#36755;&#20837;&#21442;&#25968;&#30340;&#25968;&#30446;&#19981;&#36275;&#12290;
+
+&#20986;&#38169; st_coding (line 9)
+[N_subc,N_sym] = size(mod_sym);
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function st_coded = st_coding( mod_sym,N_Tx_ant,ST_Code)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 发送分集 , 2发或4发
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+[N_subc,N_sym] = size(mod_sym);
+
+% 如果有发送分集
+if N_Tx_ant ~= 1
+    % 使用空时分组码
+    if ST_Code == 1
+        st_coded = zeros(N_subc,N_sym, N_Tx_ant);
+        if (mod(N_sym,N_Tx_ant))
+            error('空时编码器输入符号不匹配,子程序st_coding出错');
+        else
+            for n = 1:N_sym/N_Tx_ant
+                % 一次送入空时编码器的OFDM符号有N_Tx_ant个，如发送天线为2，则一次送入两个OFDM符号进行Alamouti编码
+                coded_tmp = stbc_code_TX( mod_sym( :,(n-1)*N_Tx_ant+1 : n*N_Tx_ant ) );
+                % coded_tmp的结构: 每列代表一条天线发出的数据,有N_Tx_ant*N_subc
+                % 个样点, 而一共有N_Tx_ant列,代表不同天线的数据
+                
+                % 转化为结构:有 N_subc行, 代表不同时间OFDM符号的N_Tx_ant列,
+                % 矩阵第三维为N_Tx_ant个,代表不同天线的数据
+                for ant = 1:N_Tx_ant
+                    tmp = reshape(coded_tmp(:,ant), N_subc, N_Tx_ant);%第一根天线发送的前两个符号为[Xe,-conj(Xo)]
+                    % 把调整后的符号块,放在输出符号的相应位置
+                    st_coded(:, (n-1)*N_Tx_ant+1:n*N_Tx_ant ,ant) = tmp;%利用第三维表示不同天线发送的OFDM符号
+                end
+            end
+        end
+        
+        % 使用空时格码
+    elseif ST_Code == 2
+        
+        
+    end
+    
+    % 如果没有发送分集
+else
+    st_coded = mod_sym;
+end
+
+
+
+##### SOURCE END #####
+--></body></html>

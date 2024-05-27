@@ -1,0 +1,375 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>main</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-05-10"><meta name="DC.source" content="main.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%%%%%&#21151;&#33021;&#35828;&#26126;&#65306;MIMO+OFDM&#30340;&#22522;&#24102;&#20223;&#30495;&#65292;&#30011;&#20986;&#35823;&#30721;&#29575;&#26354;&#32447;</span>
+<span class="comment">%%%%%%&#26412;&#27425;&#31243;&#24207;&#22312;&#22522;&#24102;&#20223;&#30495;&#65292;&#24182;&#27809;&#26377;&#33033;&#20914;&#25104;&#22411;&#28388;&#27874;+&#19978;&#36733;&#27874;&#36825;&#19968;&#27493;</span>
+
+<span class="comment">%%%%%%***************** &#21457;&#36865;&#31471; ***************</span>
+<span class="comment">%%%%%% &#21457;&#36865;&#31471;&#37319;&#29992;Alamouti&#32534;&#30721;&#65292;&#26377;2&#26681;&#22825;&#32447;</span>
+<span class="comment">%%%%%% &#26377;4&#20010;&#29992;&#25143;&#65292;&#27599;&#20010;&#29992;&#25143;&#21344;&#29992;&#30340;&#23376;&#36733;&#27874;&#19981;&#19968;&#26679;&#65292;adpt_mod_para&#20013;&#26377;&#29992;&#25143;&#21344;&#29992;&#23376;&#36733;&#27874;&#30340;&#20998;&#37197;&#26041;&#24335;AllocMethod</span>
+<span class="comment">%%%%%% &#35843;&#21046;&#26041;&#24335;&#65306;&#27599;&#20010;&#29992;&#25143;&#25152;&#20998;&#37197;&#30340;&#23376;&#36733;&#27874;&#36827;&#34892;&#36827;&#34892;&#30456;&#21516;&#30340;&#35843;&#21046;&#26041;&#24335;&#65292;QPSK/8PSK/16QAM&#35843;&#21046;/64QAM</span>
+<span class="comment">%%%%%%  &#20449;&#36947;&#32534;&#30721;&#65306;&#26080;</span>
+
+<span class="comment">%%%%%% ***************** &#20449;&#36947; ***************</span>
+<span class="comment">%%%%%% &#37319;&#29992;&#39640;&#26031;&#30333;&#22122;&#22768;&#20449;&#36947;&#65292;&#26410;&#20223;&#30495;&#22810;&#24452;&#20449;&#36947;</span>
+
+<span class="comment">%%%%%% ***************** &#25509;&#25910;&#31471; ***************</span>
+<span class="comment">%%%%%% &#25509;&#25910;&#31471;&#26377;2&#26681;&#22825;&#32447;&#65292;&#38656;&#35201;&#35299;Alamouti&#32534;&#30721;</span>
+<span class="comment">%%%%%% &#25509;&#25910;&#31471;&#26410;&#32771;&#34385;&#20570;&#39057;&#20559;&#20272;&#35745;&#12289;&#23450;&#26102;&#20272;&#35745;&#12289;&#20449;&#36947;&#20272;&#35745;&#65292;&#22240;&#20026;&#20449;&#36947;&#27604;&#36739;&#29702;&#24819;</span>
+<span class="comment">%%%%%% &#19982;&#21457;&#36865;&#31471;&#25968;&#25454;&#27604;&#23545;&#65292;&#24182;&#30011;&#20986;&#35823;&#30721;&#29575;&#26354;&#32447;</span>
+
+<span class="comment">%%%%%% ***************** &#31243;&#24207;&#27493;&#39588;&#35828;&#26126; ***************</span>
+<span class="comment">%%%%%% &#65288;1&#65289;&#22312;&#27599;&#20010;&#20449;&#22122;&#27604;&#19979;&#36827;&#34892;&#20223;&#30495;&#65292;&#21457;&#36865;10&#24103;&#20449;&#21495;&#65292;&#19968;&#24103;&#20026;10&#20010;OFDM&#31526;&#21495;&#65292;&#19968;&#20010;OFDM&#31526;&#21495;&#30340;IFFT&#28857;&#25968;&#20026;1024</span>
+<span class="comment">%%%%%% &#65288;2&#65289;4&#20010;&#29992;&#25143;&#20849;&#20351;&#29992;600&#20010;&#23376;&#36733;&#27874;&#65292;24&#20010;&#23376;&#36733;&#27874;&#21457;&#36865;&#23548;&#39057;&#65292;576&#20010;&#23376;&#36733;&#27874;&#21457;&#36865;&#25968;&#25454;</span>
+<span class="comment">%%%%%%   &#22240;&#27492;&#23548;&#39057;&#21608;&#26399;&#26159;600/24=25&#65292;&#20998;&#37197;&#32473;&#27599;&#20010;&#29992;&#25143;144&#23376;&#36733;&#27874;</span>
+<span class="comment">%%%%%% &#65288;3&#65289;&#27599;&#20010;&#29992;&#25143;&#24819;&#21457;&#36865;&#25968;&#25454;5760bit&#65292;&#22240;&#27492;576bit/OFDM&#31526;&#21495;&#65292;&#26681;&#25454;&#35843;&#21046;&#38454;&#25968;&#25442;&#31639;&#25104;&#38656;&#35201;&#21344;&#25454;&#30340;&#23376;&#36733;&#27874;&#20010;&#25968;</span>
+<span class="comment">%%%%%% &#65288;4&#65289;&#20197;16QAM&#20026;&#20363;&#65292;576bit = 144&#20010;&#22797;&#25968;&#31526;&#21495;&#65292;&#38656;&#35201;&#21344;144&#20010;&#23376;&#36733;&#27874;&#65292;&#19982;&#65288;2&#65289;&#21018;&#22909;&#23545;&#24212;&#19978;</span>
+
+clear <span class="string">all</span>;
+close <span class="string">all</span>;
+N_Tx_ant = 2;  <span class="comment">%&#21457;&#36865;&#22825;&#32447;&#20026;2</span>
+N_Rx_ant = 2;  <span class="comment">%&#25509;&#25910;&#22825;&#32447;&#20026;2</span>
+N_user = 4;    <span class="comment">%&#29992;&#25143;&#25968;&#20026;4</span>
+
+N_sym = 10;     <span class="comment">%  &#27599;&#24103;&#20013;OFDM&#31526;&#21495;&#25968;,&#19981;&#21253;&#25324;&#20004;&#20010;&#21069;&#32512;OFDM&#31526;&#21495; LTE&#20013;&#19968;&#24103;&#38271;&#24230;&#20026;6~7&#20010;OFDM&#31526;&#21495;</span>
+N_frame = 10;   <span class="comment">%  &#20223;&#30495;&#30340;&#24103;&#20010;&#25968;</span>
+<span class="comment">% &#20223;&#30495;&#24490;&#29615;&#24320;&#22987;&#30340;Eb_No,&#23450;&#20041;&#20026;&#27599;&#27604;&#29305;&#30340;&#33021;&#37327;Eb</span>
+<span class="comment">% &#21644;&#22122;&#22768;&#30340;&#21333;&#36793;&#21151;&#29575;&#35889;&#23494;&#24230;No&#30340;&#27604;&#20540;, dB&#20540;</span>
+Eb_NoStart = 0;
+Eb_NoInterval = 2;      <span class="comment">% &#20223;&#30495;Eb/No&#30340;&#38388;&#38548;&#20540;(dB)</span>
+Eb_NoEnd = 20;          <span class="comment">% &#20223;&#30495;Eb/No&#30340;&#32456;&#27490;&#20540;(dB)</span>
+<span class="comment">%&#20223;&#30495;&#21442;&#25968;&#36873;&#25321;&#30340;&#26159;LTE&#31995;&#32479;&#24102;&#23485;&#20026;10MHz&#26102;&#21442;&#25968;</span>
+
+<span class="comment">%%%%&#19979;&#38754;&#36825;&#20960;&#20010;&#21464;&#37327;&#35980;&#20284;&#27809;&#26377;&#29992;&#21040;</span>
+fc = 5e9;                               <span class="comment">%  &#36733;&#27874;&#39057;&#29575;(Hz)   5GHz</span>
+Bw = 20e6;                              <span class="comment">%  &#22522;&#24102;&#31995;&#32479;&#24102;&#23485;(Hz) 10MHz</span>
+fs = 15.36e6;                           <span class="comment">%  &#22522;&#24102;&#25277;&#26679;&#39057;&#29575; 1024*15KHz=15360000Hz</span>
+T_sample = 1/fs;                        <span class="comment">%  &#22522;&#24102;&#26102;&#22495;&#26679;&#28857;&#38388;&#38548;(s)</span>
+
+
+N_subc = 1024;                          <span class="comment">%  OFDM &#23376;&#36733;&#27874;&#24635;&#25968;&#65292;&#21363;FFT&#28857;&#25968;</span>
+Idx_used = [-300:-1 1:300];             <span class="comment">%  &#20351;&#29992;&#30340;&#23376;&#36733;&#27874;&#32534;&#21495;&#65292;&#19968;&#20849;&#20351;&#29992;600&#20010;&#23376;&#36733;&#27874;</span>
+Idx_pilot = [-300:25:-25 25:25:300];    <span class="comment">%  &#23548;&#39057;&#23376;&#36733;&#27874;&#32534;&#21495;,&#23548;&#39057;&#38388;&#38548;&#20026;24&#65292;&#23545;&#24212;&#20110;&#22352;&#26631;&#20026;0&#30340;&#23376;&#36733;&#27874;&#19981;&#26144;&#23556;&#25968;&#25454;&#25110;&#32773;&#23548;&#39057;&#65292;&#20026;&#38750;LTE&#26631;&#20934;</span>
+N_used = length(Idx_used);              <span class="comment">% &#20351;&#29992;&#30340;&#23376;&#36733;&#27874;&#25968; 600</span>
+N_pilot = length(Idx_pilot);            <span class="comment">% &#23548;&#39057;&#30340;&#23376;&#36733;&#27874;&#25968;</span>
+N_data = N_used - N_pilot;              <span class="comment">% &#19968;&#20010;OFDM&#31526;&#21495;&#20869;&#25152;&#26377;&#29992;&#25143;&#21457;&#36865;&#30340;&#25968;&#25454;&#30340;&#23376;&#36733;&#27874;&#25968;</span>
+Idx_data = zeros(1,N_data);
+N_tran_sym = 0;                         <span class="comment">%&#21069;&#23548;&#24207;&#21015;&#30340;&#38271;&#24230; &#27492;&#22788;&#20026;&#19981;&#28155;&#21152;&#21069;&#23548;&#24207;&#21015;</span>
+<span class="comment">% &#24471;&#21040;&#25968;&#25454;&#23376;&#36733;&#27874;&#30340;&#32534;&#21495;</span>
+m = 1;
+n = 1;
+<span class="keyword">for</span> k  = 1:length(Idx_used)
+    <span class="keyword">if</span> Idx_used(k) ~= Idx_pilot(m)
+        Idx_data(n) = Idx_used(k);
+        n = n + 1;
+    <span class="keyword">else</span>
+        <span class="keyword">if</span> m ~= N_pilot
+            m = m + 1;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="comment">%  &#20026;&#32534;&#31243;&#20351;&#29992;&#26041;&#20415;,&#35843;&#25972;&#23376;&#36733;&#27874;&#32534;&#21495;&#20026;&#20174;1&#24320;&#22987;,&#21040;&#23376;&#36733;&#27874;&#24635;&#25968; length(Idx_used) = length(Idx_pilot) + length(Idx_data)</span>
+Idx_used = Idx_used + N_subc/2 +1;    <span class="comment">%&#20351;&#29992;&#30340;&#23376;&#36733;&#27874;&#22352;&#26631;</span>
+Idx_pilot = Idx_pilot + N_subc/2 +1;  <span class="comment">%&#23548;&#39057;&#23376;&#36733;&#27874;&#22352;&#26631;</span>
+Idx_data = Idx_data + N_subc/2 +1;    <span class="comment">%&#25968;&#25454;&#23376;&#36733;&#27874;&#22352;&#26631;</span>
+
+PilotValue = ones(N_pilot,1);<span class="comment">%&#23548;&#39057;&#20540;&#20026;&#20840;1</span>
+PrefixRatio = 1/4;           <span class="comment">%&#24490;&#29615;&#21069;&#32512;&#25152;&#21344;&#27604;&#20363;&#65292;&#21363;256&#20010;&#37319;&#26679;&#28857;</span>
+T_sym = T_sample*( (1 + PrefixRatio)*N_subc );<span class="comment">%&#19968;&#20010;OFDM&#31526;&#21495;&#65288;&#21253;&#21547;&#24490;&#29615;&#21069;&#32512;&#65289;&#30340;&#25345;&#32493;&#26102;&#38388;</span>
+Modulation = 4; <span class="comment">%&#35843;&#21046;&#26041;&#24335;&#36873;&#25321;&#65292;2--QPSK&#35843;&#21046;, 3--8PSK,4--16QAM&#35843;&#21046;,6--64QAM</span>
+Es = 1;                 <span class="comment">% &#22312;QPSK, 16QAM&#35843;&#21046;&#26041;&#24335;&#19979;,&#31526;&#21495;&#33021;&#37327;&#37117;&#34987;&#24402;&#19968;&#21270;</span>
+Eb = Es/Modulation;     <span class="comment">% &#27599;&#27604;&#29305;&#33021;&#37327;</span>
+N_ant_pair = N_Tx_ant * N_Rx_ant;   <span class="comment">% &#25910;&#21457;&#22825;&#32447;&#23545;&#30340;&#25968;&#30446;</span>
+ST_Code = 1;   <span class="comment">% &#31354;&#26102;&#32534;&#30721;&#65306; , 1--&#31354;&#26102;&#20998;&#32452;&#30721;</span>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+snr_idx = 1;
+<span class="keyword">for</span> Eb_No_dB = Eb_NoStart:Eb_NoInterval:Eb_NoEnd
+    Eb_No = 10^(Eb_No_dB/10);       <span class="comment">%&#32447;&#24615;&#20449;&#22122;&#27604;</span>
+    var_noise = Eb/(2*Eb_No);       <span class="comment">% &#22122;&#22768;&#26679;&#28857;&#30340;&#21151;&#29575;   No&#20026;&#21333;&#36793;&#21151;&#29575; No=2*var_noise</span>
+    <span class="keyword">for</span> frame = 1:N_frame          <span class="comment">%&#36880;&#24103;&#24490;&#29615;&#35745;&#31639;</span>
+        <span class="comment">%%%%%%%%%%%%%%%%%%%%****************  &#21457;&#36865;&#31471;  **************%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+        <span class="comment">%&#19981;&#28155;&#21152;&#22810;&#24452;&#20449;&#36947;&#65292;&#19981;&#28155;&#21152;&#33258;&#36866;&#24212;&#32534;&#30721;&#65292;&#26080;&#20449;&#36947;&#20272;&#35745;&#31561;</span>
+        <span class="comment">%%%% &#27604;&#29305;&#20135;&#29983;</span>
+        [user_bit,user_bit_cnt]  = user_bit_gen( N_user, N_data ,N_sym , Modulation );<span class="comment">% &#22810;&#29992;&#25143;&#25968;&#25454;&#29983;&#25104;&#27169;&#22359;&#65292;&#27599;&#20010;&#29992;&#25143;&#19968;&#24103;&#30340;&#25968;&#25454;</span>
+        <span class="comment">%%%% &#20449;&#36947;&#32534;&#30721;,&#26080;</span>
+        coded_user_bit=user_bit;<span class="comment">%&#26080;&#20449;&#36947;&#32534;&#30721;&#65292;RS&#30721;&#65292;&#21367;&#31215;&#30721;&#31561;</span>
+
+        <span class="comment">%%%% &#23376;&#36733;&#27874;&#20998;&#37197;</span>
+        AllocMethod=1;<span class="comment">%&#30456;&#37051;&#20998;&#37197;</span>
+        [user_subc_alloc,mod_subc,pwr_subc,pad_bit_cnt]=adpt_mod_para(coded_user_bit,N_sym,Idx_data,AllocMethod);
+        TurnOn.AdptMod=0;<span class="comment">%&#26080;&#33258;&#36866;&#24212;&#35843;&#21046;</span>
+
+        <span class="comment">%%%% &#25353;&#29031;&#32473;&#23450;&#30340;&#27599;&#29992;&#25143;,&#27599;&#23376;&#36733;&#27874;&#30340;&#35843;&#21046;&#26041;&#24335;,&#36827;&#34892;&#35843;&#21046;</span>
+        mod_sym =  modulator(coded_user_bit,user_subc_alloc,mod_subc,pwr_subc,pad_bit_cnt,N_subc,N_sym,TurnOn.AdptMod);
+
+        <span class="comment">%%%% &#21457;&#36865;&#20998;&#38598;, &#20351;&#29992;&#31354;&#26102;&#32534;&#30721;</span>
+        st_coded = st_coding( mod_sym,N_Tx_ant,ST_Code);
+
+        <span class="comment">% &#21152;&#23548;&#39057;</span>
+        pilot_added = pilot_insert(st_coded,Idx_pilot,PilotValue);
+
+        <span class="comment">% OFDM&#35843;&#21046;,&#21152;&#24490;&#29615;&#21069;&#32512;&#65292;&#21152;&#21069;&#23548;&#24207;&#21015;. &#22914;&#26524;&#20351;&#29992;&#21457;&#36865;&#20998;&#38598;,&#21017;&#36755;&#20986;&#22810;&#26465;&#22825;&#32447;&#30340;&#20449;&#21495;</span>
+        <span class="comment">%%%%%&#23454;&#38469;&#20989;&#25968;&#20013;&#19981;&#28155;&#21152;&#21069;&#23548;&#24207;&#21015;</span>
+        [transmit_signal] = ofdm_mod(pilot_added,PrefixRatio,N_subc,N_sym,N_used,Idx_used,N_Tx_ant,N_tran_sym);
+
+        <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% &#20449;&#36947;  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+        transmit_signal_power = var(transmit_signal);<span class="comment">%&#21457;&#36865;&#20449;&#21495;&#21151;&#29575;</span>
+        length_noise=size(transmit_signal,2);
+        noise=gausnoise(Eb_No_dB,transmit_signal_power,length_noise);<span class="comment">%&#20135;&#29983;&#22797;&#22122;&#22768;&#24207;&#21015;</span>
+        recv_signal =  transmit_signal+noise;<span class="comment">%&#25509;&#25910;&#21040;&#30340;&#20449;&#21495;&#21152;&#22122;&#22768;</span>
+
+        <span class="comment">%%%%%%%%%%%%%%%%%%%*********************  &#25509;&#25910;&#31471;  **************%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+        <span class="keyword">for</span> u = 1:N_user        <span class="comment">% &#22810;&#20010;&#29992;&#25143;&#25509;&#25910;&#26426;&#30340;&#24490;&#29615;</span>
+            <span class="comment">%&#26080;&#20449;&#36947;&#20272;&#35745;&#65292;&#21516;&#27493;&#31561;</span>
+
+            <span class="comment">% OFDM&#35299;&#35843;</span>
+            data_sym = ofdm_demod(recv_signal,PrefixRatio,N_subc,N_sym,N_tran_sym,N_Rx_ant);
+
+            <span class="comment">% &#25509;&#25910;&#26426;&#20998;&#38598;&#22788;&#29702;&#21644;&#31354;&#26102;&#35299;&#30721;</span>
+            channel_est = ones(N_subc,1,N_ant_pair);<span class="comment">%&#20551;&#35774;&#20026;&#29702;&#24819;&#20449;&#36947;&#65292;&#20449;&#36947;&#20272;&#35745;&#20026;&#20840;1&#30697;&#38453;</span>
+            st_decoded = st_decoding( data_sym,channel_est,N_Tx_ant, N_Rx_ant ,ST_Code ,Idx_data);<span class="comment">%2X2MIMO</span>
+
+            <span class="comment">% &#26681;&#25454;&#27599;&#29992;&#25143;,&#27599;&#23376;&#36733;&#27874;&#30340;&#35843;&#21046;&#26041;&#24335;,&#36827;&#34892;&#35299;&#35843;</span>
+            demod_user_bit = demodulator(st_decoded,user_subc_alloc{u},mod_subc{u},pad_bit_cnt(u),N_sym,TurnOn.AdptMod);
+
+            <span class="comment">%&#26080;&#20449;&#36947;&#35299;&#30721;, &#21253;&#25324;RS&#35299;&#30721;, &#21367;&#31215;&#30721;Viterbi&#32534;&#30721;&#31561;</span>
+            decoded_user_bit{u}= demod_user_bit;
+
+            <span class="comment">% &#26412;&#24103;,&#26412;&#20449;&#22122;&#27604;&#19979;,&#26412;&#29992;&#25143;&#30340;&#24615;&#33021;&#32479;&#35745;</span>
+            bit_err = sum(abs(decoded_user_bit{u} - user_bit{u}));<span class="comment">%&#35823;&#30721;&#29575;&#35745;&#31639;</span>
+            user_bit_err{u}(frame,snr_idx) = bit_err ;
+        <span class="keyword">end</span>  <span class="comment">% &#22810;&#20010;&#29992;&#25143;&#25509;&#25910;&#26426;&#30340;&#24490;&#29615;&#32467;&#26463;</span>
+        <span class="comment">% &#23454;&#26102;&#26174;&#31034;&#20223;&#30495;&#24615;&#33021;</span>
+<span class="comment">%         fprintf('Eb/No:%d dB\tFrame No.:%d  Err Bits:%d\n',Eb_No_dB, frame, bit_err);</span>
+    <span class="keyword">end</span>     <span class="comment">% OFDM&#24103;/&#25968;&#25454;&#21253;&#24490;&#29615;&#32467;&#26463;</span>
+    snr_idx = snr_idx + 1;
+<span class="keyword">end</span>      <span class="comment">% Eb/No&#20449;&#22122;&#27604;&#24490;&#29615;&#32467;&#26463;</span>
+
+performance_eval;<span class="comment">% &#30011;&#22270;</span>
+<span class="comment">%%%%&#23454;&#39564;&#32467;&#26524;</span>
+<span class="comment">%%%&#26412;&#27425;&#23454;&#39564;&#27809;&#26377;&#20449;&#36947;&#32534;&#30721;&#65292;&#25509;&#25910;&#31471;&#27809;&#26377;&#39057;&#20559;&#20272;&#35745;&#12289;&#23450;&#26102;&#21516;&#27493;&#12289;&#20449;&#36947;&#20272;&#35745;&#12289;&#20449;&#36947;&#22343;&#34913;&#31561;&#27493;&#39588;</span>
+<span class="comment">%%%&#35823;&#30721;&#29575;&#26080;&#32447;&#20445;&#23384;&#22312;BER-SNR.fig&#20013;</span>
+</pre><img vspace="5" hspace="5" src="main_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+
+%%%%%功能说明：MIMO+OFDM的基带仿真，画出误码率曲线
+%%%%%%本次程序在基带仿真，并没有脉冲成型滤波+上载波这一步
+
+%%%%%%***************** 发送端 ***************
+%%%%%% 发送端采用Alamouti编码，有2根天线
+%%%%%% 有4个用户，每个用户占用的子载波不一样，adpt_mod_para中有用户占用子载波的分配方式AllocMethod
+%%%%%% 调制方式：每个用户所分配的子载波进行进行相同的调制方式，QPSK/8PSK/16QAM调制/64QAM
+%%%%%%  信道编码：无
+
+%%%%%% ***************** 信道 ***************
+%%%%%% 采用高斯白噪声信道，未仿真多径信道
+
+%%%%%% ***************** 接收端 ***************
+%%%%%% 接收端有2根天线，需要解Alamouti编码
+%%%%%% 接收端未考虑做频偏估计、定时估计、信道估计，因为信道比较理想
+%%%%%% 与发送端数据比对，并画出误码率曲线
+
+%%%%%% ***************** 程序步骤说明 ***************
+%%%%%% （1）在每个信噪比下进行仿真，发送10帧信号，一帧为10个OFDM符号，一个OFDM符号的IFFT点数为1024
+%%%%%% （2）4个用户共使用600个子载波，24个子载波发送导频，576个子载波发送数据
+%%%%%%   因此导频周期是600/24=25，分配给每个用户144子载波
+%%%%%% （3）每个用户想发送数据5760bit，因此576bit/OFDM符号，根据调制阶数换算成需要占据的子载波个数
+%%%%%% （4）以16QAM为例，576bit = 144个复数符号，需要占144个子载波，与（2）刚好对应上
+
+clear all;
+close all;
+N_Tx_ant = 2;  %发送天线为2
+N_Rx_ant = 2;  %接收天线为2
+N_user = 4;    %用户数为4
+
+N_sym = 10;     %  每帧中OFDM符号数,不包括两个前缀OFDM符号 LTE中一帧长度为6~7个OFDM符号
+N_frame = 10;   %  仿真的帧个数
+% 仿真循环开始的Eb_No,定义为每比特的能量Eb
+% 和噪声的单边功率谱密度No的比值, dB值
+Eb_NoStart = 0;
+Eb_NoInterval = 2;      % 仿真Eb/No的间隔值(dB)
+Eb_NoEnd = 20;          % 仿真Eb/No的终止值(dB)
+%仿真参数选择的是LTE系统带宽为10MHz时参数
+
+%%%%下面这几个变量貌似没有用到
+fc = 5e9;                               %  载波频率(Hz)   5GHz
+Bw = 20e6;                              %  基带系统带宽(Hz) 10MHz
+fs = 15.36e6;                           %  基带抽样频率 1024*15KHz=15360000Hz
+T_sample = 1/fs;                        %  基带时域样点间隔(s)
+
+
+N_subc = 1024;                          %  OFDM 子载波总数，即FFT点数
+Idx_used = [-300:-1 1:300];             %  使用的子载波编号，一共使用600个子载波
+Idx_pilot = [-300:25:-25 25:25:300];    %  导频子载波编号,导频间隔为24，对应于坐标为0的子载波不映射数据或者导频，为非LTE标准
+N_used = length(Idx_used);              % 使用的子载波数 600
+N_pilot = length(Idx_pilot);            % 导频的子载波数
+N_data = N_used - N_pilot;              % 一个OFDM符号内所有用户发送的数据的子载波数
+Idx_data = zeros(1,N_data);
+N_tran_sym = 0;                         %前导序列的长度 此处为不添加前导序列
+% 得到数据子载波的编号
+m = 1;
+n = 1;
+for k  = 1:length(Idx_used)
+    if Idx_used(k) ~= Idx_pilot(m)
+        Idx_data(n) = Idx_used(k);
+        n = n + 1;
+    else
+        if m ~= N_pilot
+            m = m + 1;
+        end
+    end
+end
+%  为编程使用方便,调整子载波编号为从1开始,到子载波总数 length(Idx_used) = length(Idx_pilot) + length(Idx_data) 
+Idx_used = Idx_used + N_subc/2 +1;    %使用的子载波坐标
+Idx_pilot = Idx_pilot + N_subc/2 +1;  %导频子载波坐标
+Idx_data = Idx_data + N_subc/2 +1;    %数据子载波坐标
+
+PilotValue = ones(N_pilot,1);%导频值为全1
+PrefixRatio = 1/4;           %循环前缀所占比例，即256个采样点
+T_sym = T_sample*( (1 + PrefixRatio)*N_subc );%一个OFDM符号（包含循环前缀）的持续时间
+Modulation = 4; %调制方式选择，2REPLACE_WITH_DASH_DASHQPSK调制, 3REPLACE_WITH_DASH_DASH8PSK,4REPLACE_WITH_DASH_DASH16QAM调制,6REPLACE_WITH_DASH_DASH64QAM
+Es = 1;                 % 在QPSK, 16QAM调制方式下,符号能量都被归一化
+Eb = Es/Modulation;     % 每比特能量
+N_ant_pair = N_Tx_ant * N_Rx_ant;   % 收发天线对的数目
+ST_Code = 1;   % 空时编码： , 1REPLACE_WITH_DASH_DASH空时分组码
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+snr_idx = 1;
+for Eb_No_dB = Eb_NoStart:Eb_NoInterval:Eb_NoEnd
+    Eb_No = 10^(Eb_No_dB/10);       %线性信噪比
+    var_noise = Eb/(2*Eb_No);       % 噪声样点的功率   No为单边功率 No=2*var_noise
+    for frame = 1:N_frame          %逐帧循环计算
+        %%%%%%%%%%%%%%%%%%%%****************  发送端  **************%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %不添加多径信道，不添加自适应编码，无信道估计等
+        %%%% 比特产生
+        [user_bit,user_bit_cnt]  = user_bit_gen( N_user, N_data ,N_sym , Modulation );% 多用户数据生成模块，每个用户一帧的数据
+        %%%% 信道编码,无
+        coded_user_bit=user_bit;%无信道编码，RS码，卷积码等
+        
+        %%%% 子载波分配 
+        AllocMethod=1;%相邻分配
+        [user_subc_alloc,mod_subc,pwr_subc,pad_bit_cnt]=adpt_mod_para(coded_user_bit,N_sym,Idx_data,AllocMethod);
+        TurnOn.AdptMod=0;%无自适应调制
+        
+        %%%% 按照给定的每用户,每子载波的调制方式,进行调制
+        mod_sym =  modulator(coded_user_bit,user_subc_alloc,mod_subc,pwr_subc,pad_bit_cnt,N_subc,N_sym,TurnOn.AdptMod);
+        
+        %%%% 发送分集, 使用空时编码
+        st_coded = st_coding( mod_sym,N_Tx_ant,ST_Code);
+        
+        % 加导频
+        pilot_added = pilot_insert(st_coded,Idx_pilot,PilotValue);
+        
+        % OFDM调制,加循环前缀，加前导序列. 如果使用发送分集,则输出多条天线的信号
+        %%%%%实际函数中不添加前导序列
+        [transmit_signal] = ofdm_mod(pilot_added,PrefixRatio,N_subc,N_sym,N_used,Idx_used,N_Tx_ant,N_tran_sym);
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 信道  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        transmit_signal_power = var(transmit_signal);%发送信号功率
+        length_noise=size(transmit_signal,2);
+        noise=gausnoise(Eb_No_dB,transmit_signal_power,length_noise);%产生复噪声序列
+        recv_signal =  transmit_signal+noise;%接收到的信号加噪声
+        
+        %%%%%%%%%%%%%%%%%%%*********************  接收端  **************%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        for u = 1:N_user        % 多个用户接收机的循环
+            %无信道估计，同步等
+            
+            % OFDM解调
+            data_sym = ofdm_demod(recv_signal,PrefixRatio,N_subc,N_sym,N_tran_sym,N_Rx_ant);
+            
+            % 接收机分集处理和空时解码
+            channel_est = ones(N_subc,1,N_ant_pair);%假设为理想信道，信道估计为全1矩阵
+            st_decoded = st_decoding( data_sym,channel_est,N_Tx_ant, N_Rx_ant ,ST_Code ,Idx_data);%2X2MIMO
+            
+            % 根据每用户,每子载波的调制方式,进行解调
+            demod_user_bit = demodulator(st_decoded,user_subc_alloc{u},mod_subc{u},pad_bit_cnt(u),N_sym,TurnOn.AdptMod);
+            
+            %无信道解码, 包括RS解码, 卷积码Viterbi编码等
+            decoded_user_bit{u}= demod_user_bit;
+            
+            % 本帧,本信噪比下,本用户的性能统计
+            bit_err = sum(abs(decoded_user_bit{u} - user_bit{u}));%误码率计算
+            user_bit_err{u}(frame,snr_idx) = bit_err ;
+        end  % 多个用户接收机的循环结束
+        % 实时显示仿真性能
+%         fprintf('Eb/No:%d dB\tFrame No.:%d  Err Bits:%d\n',Eb_No_dB, frame, bit_err);
+    end     % OFDM帧/数据包循环结束
+    snr_idx = snr_idx + 1;
+end      % Eb/No信噪比循环结束
+
+performance_eval;% 画图
+%%%%实验结果 
+%%%本次实验没有信道编码，接收端没有频偏估计、定时同步、信道估计、信道均衡等步骤
+%%%误码率无线保存在BER-SNR.fig中
+
+
+
+##### SOURCE END #####
+--></body></html>
